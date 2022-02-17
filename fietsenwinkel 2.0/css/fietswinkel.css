@@ -1,0 +1,72 @@
+/* deze id zordt dat al text hetzelfe maat hebben */
+#page{
+    
+    font-size: 20px;
+}    
+
+
+ #header{
+    background-color: blueviolet;
+    padding: 15px;
+    color: white;
+}
+/* deze id zorgt dat de rest van het menu  ander kleur  heeft */
+#menu{
+   background-color: silver;
+   margin-top: -10px;
+   background-size: 500px;
+  
+    
+}
+/* deze element zorgt dat de items naast elkaar zitten */
+ul{
+    display: flex;
+    list-style-type: none; 
+    /* margin-right: 75%; */
+    
+    margin-top: 30px;
+   
+}
+ /* deze element zordt dat items niet stretch zitten */
+ li {
+  background-color: rgb(156, 146, 126);
+    
+    padding: 15px;
+      
+  }
+/* deze element zorgt dat de items naast elkaar zitten */
+ #main{
+    display: flex;
+    
+}
+
+#aside1{
+   
+    justify-content: start;
+    background-color:  silver;
+    width: 300px;
+    height: 500px;
+   
+  }
+
+  #content{
+   
+    justify-content: center; 
+    background-color: rgb(212, 196, 166);
+     width: 1000px;
+     height: 500px;
+  
+ 
+  }
+  #aside2{
+    justify-content: end; 
+    background-color:  silver;
+    width: 300px;
+    height: 500px;   
+  
+} 
+
+#Footer{
+    background-color: rgb(240, 209, 170);
+    margin-top: 10px;
+}
