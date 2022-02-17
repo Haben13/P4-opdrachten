@@ -24,8 +24,7 @@
 
 
 
-        <section><?= getSection(); ?></section>
-
+       
 
 
         <aside class="asideRight"><?= getAside('Right'); ?></aside>
