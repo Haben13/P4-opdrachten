@@ -15,7 +15,6 @@ require_once("include/userfunctions.php");
 require_once("include/fietsfunctions.php");
 
 
-
-$content = "Dit is de content";
-
 require ("include/layout.php");
+
+?>

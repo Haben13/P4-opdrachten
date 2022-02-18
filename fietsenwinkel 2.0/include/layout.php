@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+  
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,19 +15,12 @@
 
     <header><?= getHeader(); ?></header>
 
-
-
     <nav><?= getNav() ?></nav>
 
-    <div id="main">
+    <div class ="main">
 
         <aside class="asideLeft"><?= getAside('left'); ?></aside>
-
-
-
-       
-
-
+       <section><?= getSection();?></section>
         <aside class="asideRight"><?= getAside('Right'); ?></aside>
 
     </div>
