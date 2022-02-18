@@ -76,10 +76,15 @@ function getPage()
     return $page;
 }
 
-function showFietsen()
-{
-    return "fietsen";
+function showFietsen(){
+  $fietsen = getFietsen();
+  $overzichtFietsen = "";
+  foreach ($fietsen as $fiets){
+    $overzichtFietsen .= $fiets['Merk']. "-". $fiets['Type'] ."<br>";
+  }
+  return $overzichtFietsen;
 }
+
 function adminFietsen()
 {
     return "adminfietsen";
