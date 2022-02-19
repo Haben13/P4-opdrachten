@@ -110,10 +110,29 @@ function addFiets()
     return "adminfietsen";
 }
 
-function login()
-{
-    return "adminfietsen";
+function checkUserPassword($username, $password){
+
 }
+function login(){
+   if(isset($_POST['inloggen'])){
+  $username = check_input ($_POST['username']);
+  $password = check_input ($_POST['password']);
+  if(checkUserPassword($username, $password)){
+   echo "U bent ingelogd.";
+   header ('Refresh:2; url=index.php');
+   } 
+   else{
+   echo "Er is iets fout gegaan tijdens het inloggen.";
+   header ('Refresh:2; url=index.php?page=inloggen');
+}
+}
+
+else{
+  include("include/html/user/login.html"); // Login form
+}
+}
+
+
 function register()
 {
     return "adminfietsen";
