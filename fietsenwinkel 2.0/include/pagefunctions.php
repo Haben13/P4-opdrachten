@@ -110,9 +110,34 @@ function addFiets()
     return "adminfietsen";
 }
 
-function checkUserPassword($username, $password){
+function checkUserPassword($username, $password){ // test of user / password combinatie bestaat.
+  if(($username <> "") && ($password <> "")){
+    $conn=dBConnect();
+    $sql = "SELECT * FROM gebruikers WHERE username='$username'";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $stmt->setFetchMode (PDO::FETCH_ASSOC);
+    $users = $stmt->fetchAll();
+    foreach($users as $user){ // wordt overgeslagen bij leeg array.
+      $passwordHash=$user['password'];
+      if(password_verify($password, $passwordHash)){
+        $_SESSION['login'] = true;
+        $_SESSION['username']=$user['username'];
+        $_SESSION['role']=$user['role'];
+        return true; // user en password ok.
+       }
+        else {
+        return false; // fout password
+        }
+    }
+    $conn=NULL;
+  }
 
+  else{
+      return false;
+  }
 }
+
 function login(){
    if(isset($_POST['inloggen'])){
   $username = check_input ($_POST['username']);
