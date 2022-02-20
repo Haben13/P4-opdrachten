@@ -9,6 +9,8 @@ function getFietsen(){
   $fietsen = $stmt->fetchAll();
 
   return $fietsen;
+  echo
+  $fietsen;
 }
 
 ?>

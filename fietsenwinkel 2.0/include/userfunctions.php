@@ -1,6 +1,11 @@
 <?php
-function  checkRole(){
-    return true;
+function  checkRole($role){
+   if($_SESSION['role'] >= $role){
+ return true;
+}
+else{
+ return false;
+}
 }
 
 if(!isset($_SESSION['login'])){ // Nog geen gebruiker ingelogd.

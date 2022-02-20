@@ -157,12 +157,58 @@ else{
 }
 }
 
-
-function register()
-{
-    return "adminfietsen";
+function checkUser($username){ // Test of user bestaat
+  if($username <> ""){
+    $conn=dBConnect();
+    $sql = "SELECT * FROM gebruikers WHERE username='$username'";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $stmt->setFetchMode (PDO::FETCH_ASSOC);
+    $users = $stmt->fetchAll();
+    foreach($users as $user){ // wordt overgeslagen bij Leeg array.
+      if($username == $user['username']){
+        return true; // user bestaat
+       } 
+       else {
+        return false; // user bestaat niet
+  }
 }
+  }
+  else {
+    return false; // onvoldoende invoer
+}
+ }
 
+
+
+function register(){
+     // Op basis van form in include/htmL/user/register.html
+if(isset($_POST['register'])){ // gebruiker heeft op registreren geklikt
+  $username = check_input ($_POST['username']);
+  if(checkUser ($username)){ // Test of user al bestaat.
+    echo "Gebruiker bestaat al.";
+    header ('Refresh:5; url-index.php?page%=registreren');
+   }
+   else{ // registreren gebruiker
+    $conn=dBConnect();
+    $stmt = $conn->prepare("INSERT INTO gebruikers (username, password, role)  VALUES (:username, :password, :role)");
+    $stmt->bindParam(':username', $username);
+    $stmt->bindParam(':password', $passwordHash);
+    $stmt->bindParam(':role', $role);
+    $username = check_input ($_POST['username']);
+    $password = check_input ($_POST[ 'password']);
+    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+    $role = 1; // nieuwe gebruiker is altijd: role=1
+    $stmt->execute();
+    echo "Gebruiker aangemaakt";
+    header ('Refresh:2; url-index.php?page-inloggen');
+    $conn=NULL;
+}
+}
+else {
+    include("include/html/user/register.html");
+}
+}
 
 
 
