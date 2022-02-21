@@ -42,12 +42,12 @@ function getNav()
 
     if (checkRole(8)) { // ALleen beheerders mogen in het beheerders menu
 
-        $menu .= "<a href='index.php?page=Dadminfietsen'>Admin fietsen</a>";
+        $menu .= "<a href='index.php?page=Dadminfietsen'>Adminfietsen</a>";
     }
 
     if (checkRole(9)) { // Alleen administrators mogen in het admin menu
 
-        $menu .= "<a href='index.php?page=adminusers'>Admin gebruikers</a>";
+        $menu .= "<a href='index.php?page=adminusers'>Admingebruikers</a>";
     }
 
     if (!$_SESSION['login']) {
@@ -85,15 +85,30 @@ function showFietsen(){
   return $overzichtFietsen;
 }
 
-function adminFietsen()
-{
-    return "adminfietsen";
+function adminFietsen(){
+  if(!checkRole(8)){
+    header('Refresh:2; url-index.php');
+    return "U heeft hier geen rechten voor!";
+  }
+  if(checkRole(8)){ // ALLeen beheerders mogen in het beheerders menu
+    $fietsen = getFietsen();
+    $overzichtFietsen = "";
+    foreach($fietsen as $fiets){
+      $id = $fiets['id'];
+      $merk = $fiets['Merk'];
+      $type = $fiets['Type'];
+      $overzichtFietsen .= $merk. "- " . $type. "-";
+      $overzichtFietsen .= "<a href='index.php?page=showFiets&id-$id'>Show</a>". " ";
+      $overzichtFietsen .= "<a href='index.php?page=editFiets&id=$id''>Edit</a>" . " ";
+      $overzichtFietsen .= "<a href='index.php?page=delFiets&id-$id''>Del</a>";
+      $overzichtFietsen .= "<br>";
+    }
+    $overzichtFietsen .= "<a href='index.php?page=addFiets'>Fiets toevoegen</a>". "<br>";
+    return $overzichtFietsen;
+    }
 }
 
-function showfiets()
-{
-    return "adminfietsen";
-}
+
 
 function editFiets($id)
 {
@@ -108,6 +123,30 @@ function delFiets($id)
 function addFiets()
 {
     return "adminfietsen";
+}
+
+function showFiets($id){
+  $fiets = getFiets ($id);
+  $overzichtfiets = "id: ". $fiets['id']. "<br>";
+  $overzichtfiets .= "Merk: ".$fiets['Merk']. "<br>";
+  $overzichtfiets .= "Type: ". $fiets['type']. "<br>";
+  $overzichtfiets .= "Prijs: ". $fiets['prijs']. " Eurocbr>";
+  $overzichtfiets .= "info: ". $fiets['info']. "<br><br>";
+  $overzichtfiets .- "<a href=index.php?page=adminfietsen>terug naar adminmenu</a>";
+  return $overzichtfiets;
+}
+
+function getFiets($id)
+{
+    $conn = dBConnect();
+    $query = "SELECT * FROM fietsen WHERE id=$id";
+    $stmt = $conn->prepare($query);
+    $stmt->execute();
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $fietsen = $stmt->fetchAll();
+    foreach ($fietsen as $fiets) { // het is een array met 1 element
+        return $fiets;
+    }
 }
 
 function checkUserPassword($username, $password){ // test of user / password combinatie bestaat.
