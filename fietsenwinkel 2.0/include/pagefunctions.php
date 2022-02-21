@@ -109,11 +109,38 @@ function adminFietsen(){
 }
 
 
-
-function editFiets($id)
-{
-    return "adminfietsen";
+function editFiets ($id){
+  if(!checkRole(8)){ // Test of gebruiker juiste rechten heeft
+   header ('Refresh:2; url=index.php');
+    return "U heeft hier geen rechten voor!";
+  }
+ if(!isset ($_POST['wijzigen'])){ // Haal alle info op zodat ze in het formulier ingevuld kunnen worden.
+    $fiets = getFiets($id);
+    $id = $fiets['Id'];
+    $merk = $fiets['Merk'];
+    $type = $fiets['Type'];
+    $prijs = $fiets['Prijs'];
+    $info = $fiets['info'];
+    include("include/html/fiets/edit.html"); // Login form
+  }elseif (isset($_POST['annuleren'])){
+   header ('Refresh:2; url=index.php?page=adminfietsen');
+  }else{ //wijzigingen uit formulier doorvoeren
+    $merk = $_POST['merk'];
+    $type = $_POST['type'];
+    $prijs = $_POST['prijs'];
+    $info = $_POST['info'];
+     $conn=dBConnect ();
+    $stmt = $conn->prepare("UPDATE fietsen
+                            SET Merk='$merk', Type='$type', Prijs='$prijs', info='$info'
+                            WHERE Id=$id");
+        $stmt->execute();
+        $conn = NULL;
+        echo "Wijziging doorgevoerd";
+        header('Refresh:2; url=index.php?page%=adminfietsen');
+    }
 }
+
+
 
 function delFiets($id)
 {
