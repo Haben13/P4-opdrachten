@@ -100,7 +100,7 @@ function adminFietsen(){
       $overzichtFietsen .= $merk. "- " . $type. "-";
       $overzichtFietsen .= "<a href='index.php?page=showFiets&Id=$id'>Show</a>". " ";
       $overzichtFietsen .= "<a href='index.php?page=editFiets&Id=$id''>Edit</a>" . " ";
-      $overzichtFietsen .= "<a href='index.php?page=delFiets&Id-$id''>Del</a>";
+      $overzichtFietsen .= "<a href='index.php?page=delFiets&Id=$id'>Del</a>";
       $overzichtFietsen .= "<br>";
     }
     $overzichtFietsen .= "<a href='index.php?page=addFiets'>Fietstoevoegen</a>". "<br>";
@@ -141,10 +141,20 @@ function editFiets ($id){
 }
 
 
+function delFiets($Id){
 
-function delFiets($id)
-{
-    return "adminfietsen";
+    if (!checkRole(8)){
+        header('Refresh:2; url-index.php');
+        return "U heeft hier geen rechten voor!";
+    }
+    {
+        $conn = dBConnect();
+        $sql = "DELETE FROM fietsen WHERE Id= $Id";
+        $conn->exec($sql);
+        echo "Fiets verwijderd";
+        header('Refresh:2; url-index.php?page-adminfietsen');
+    }
+      
 }
 
 
