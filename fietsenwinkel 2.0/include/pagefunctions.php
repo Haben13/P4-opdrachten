@@ -108,19 +108,48 @@ function adminFietsen(){
     }
 }
 
+ function adminuser(){
+    if (!checkRole(9)) {
+        header('Refresh:2; url-index.php');
+        return "U heeft hier geen rechten voor!";
+    }
+    if (checkRole(9)) { // ALLeen beheerders mogen in het beheerders menu
+        $gebruik = getuser();
+        $overzichtgebruikers = "";
+        foreach ($gebruik as $gebruiks) {
+            $id = $gebruiks['id'];
+            $username = $gebruiks['username'];
+            $password = $gebruiks['password'];
+            // $role = $gebruiks['role'];
 
-function editFiets ($id){
+            $overzichtgebruikers .=  $username . "-";
+            $overzichtgebruikers .= "<a href='index.php?page=showusers&Id=$id'>Show</a>" . " ";
+            $overzichtgebruikers .= "<a href='index.php?page=editusers&Id=$id''>Edit</a>" . " ";
+            $overzichtgebruikers .= "<a href='index.php?page=delusers&Id=$id'>Del</a>";
+            $overzichtgebruikers .= "<br>";
+        }
+      
+        return $overzichtgebruikers;
+    }
+}
+
+ 
+
+
+function editFiets($id){
   if(!checkRole(8)){ // Test of gebruiker juiste rechten heeft
    header ('Refresh:2; url=index.php');
     return "U heeft hier geen rechten voor!";
   }
  if(!isset ($_POST['wijzigen'])){ // Haal alle info op zodat ze in het formulier ingevuld kunnen worden.
     $fiets = getFiets($id);
+    
     $id = $fiets['Id'];
     $merk = $fiets['Merk'];
     $type = $fiets['Type'];
     $prijs = $fiets['Prijs'];
     $info = $fiets['info'];
+  
     include("include/html/fiets/edit.html"); // Login form
   }elseif (isset($_POST['annuleren'])){
    header ('Refresh:2; url=index.php?page=adminfietsen');
@@ -129,14 +158,47 @@ function editFiets ($id){
     $type = $_POST['type'];
     $prijs = $_POST['prijs'];
     $info = $_POST['info'];
+    $role = $_POST['role'];
      $conn=dBConnect ();
     $stmt = $conn->prepare("UPDATE fietsen
                             SET Merk='$merk', Type='$type', Prijs='$prijs', info='$info'
                             WHERE Id=$id");
+                         
         $stmt->execute();
         $conn = NULL;
         echo "Wijziging doorgevoerd";
         header('Refresh:2; url=index.php?page%=adminfietsen');
+    }
+}
+function editusers($id)
+{
+    if (!checkRole(9)) { // Test of gebruiker juiste rechten heeft
+        header('Refresh:2; url=index.php');
+        return "U heeft hier geen rechten voor!";
+    }
+    if (!isset($_POST['wijzigen'])) { // Haal alle info op zodat ze in het formulier ingevuld kunnen worden.
+        $gebruik = getgebruiker($id);
+        $username= $gebruik['username'];
+        $password = $gebruik['password'];
+        $role = $gebruik['role'];
+
+
+        include("include/html/fiets/editgb.html"); // Login form
+    } elseif (isset($_POST['annuleren'])) {
+        header('Refresh:2; url=index.php?page=adminusers');
+    } else { //wijzigingen uit formulier doorvoeren
+       $username = $_POST['username'];
+        $password = $_POST['password'];
+        $role = $_POST['role'];
+        $conn = dBConnect();
+        
+        $stmt = $conn->prepare("UPDATE gebruikers
+                            SET role= '$role', username= '$username', password = '$password'
+                            WHERE Id=$id");
+        $stmt->execute();
+        $conn = NULL;
+        echo "Wijziging doorgevoerd";
+        header('Refresh:2; url=index.php?page%=adminusers');
     }
 }
 
@@ -151,16 +213,26 @@ function delFiets($Id){
         $conn = dBConnect();
         $sql = "DELETE FROM fietsen WHERE Id= $Id";
         $conn->exec($sql);
-        echo "Fiets verwijderd";
+        echo "Account verwijderd";
         header('Refresh:2; url-index.php?page-adminfietsen');
     }
       
 }
 
+function delusers($Id)
+{
 
- 
-
-
+    if (!checkRole(8)) {
+        header('Refresh:2; url-index.php');
+        return "U heeft hier geen rechten voor!";
+    } {
+        $conn = dBConnect();
+        $sql = "DELETE FROM gebruikers WHERE Id= $Id";
+        $conn->exec($sql);
+        echo "Fiets verwijderd";
+        header('Refresh:2; url-index.php?page-adminfietsen');
+    }
+}
 
 function showFiets($id){
   $fiets = getFiets ($id);
@@ -173,6 +245,18 @@ function showFiets($id){
   return $overzichtfiets;
 }
 
+function showusers($id)
+{
+    $gebruik = getgebruiker($id);
+    $overzichtgebruikers = "Id: " . $gebruik['id'] . "<br>";
+    $overzichtgebruikers .= "username: " . $gebruik['username'] . "<br>";
+    $overzichtgebruikers .= "password: " . $gebruik['password'] . "<br>";
+    $overzichtgebruikers .= "role: " . $gebruik['role'] . "<br>";
+
+    $overzichtgebruikers .= "<a href=index.php?page=adminusers>terug naar adminmenu</a>";
+    return $overzichtgebruikers;
+}
+
 function getFiets($id)
 {
     $conn = dBConnect();
@@ -183,6 +267,18 @@ function getFiets($id)
     $fietsen = $stmt->fetchAll();
     foreach ($fietsen as $fiets) { // het is een array met 1 element
         return $fiets;
+    }
+}
+function getgebruiker($id)
+{
+    $conn = dBConnect();
+    $query = "SELECT * FROM gebruikers WHERE Id=$id";
+    $stmt = $conn->prepare($query);
+    $stmt->execute();
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $gebruik = $stmt->fetchAll();
+    foreach ($gebruik as $gebruikers) { // het is een array met 1 element
+        return $gebruikers;
     }
 }
 
@@ -319,7 +415,11 @@ function addFiets()
             }
         }
     }
+function loguit(){
 
+    header('Refresh:2; url=index.php?page=inloggen');
+
+}
 
 function getSection()
 {
@@ -339,6 +439,9 @@ function getSection()
         case "adminfietsen":
             $section = adminFietsen();
             break;
+        case "adminusers":
+            $section = adminuser();
+            break;
         case "showFiets":
             $id = $_GET['Id'];
             $section = showfiets($id);
@@ -347,6 +450,7 @@ function getSection()
             $id = $_GET['Id'];
             $section = editFiets($id);
             break;
+
         case "delFiets":
             $id = $_GET['Id'];
             $section = delFiets($id);
@@ -354,15 +458,30 @@ function getSection()
         case "addFiets":
             $section = addFiets();
             break;
+        case "showusers":
+            $id = $_GET['Id'];
+            $section = showusers($id);
+            break;
+        case "editusers":
+            $id = $_GET['Id'];
+            $section = editusers($id);
+            break;
+        case "delusers":
+            $id = $_GET['Id'];
+            $section = delusers($id);
+            break;
         case "inloggen":
             $section = login();
+            break;
+        case "uitloggen":
+            $section = loguit();
             break;
         case "registreren":
             $section = register();
             break;
 
         case "bestellen":
-            include("include/html/bestellen.htm1");
+            include("include/html/bestellen.html");
             break;
         case "test":
             include("include/html/test.html");
