@@ -2,22 +2,28 @@
 // Selecteer server en database
 if ( $_SERVER[ 'SERVER_NAME'] == "localhost" ) {
   // Zet databasegegevens op Lokaal
-  DEFINE( "USER", "root" );
-  DEFINE( "PASSWORD","");
-  DEFINE( "HOST", "localhost" );
-  DEFINE( "DBNAME", "fietsenwinkel");
+  DEFINE("USER", "root");
+  DEFINE("PASSWORD", "");
+  DEFINE("HOST", "localhost");
+  DEFINE("DBNAME", "fietsenwinkel");
   
-
 } 
 
 else {
- // Zet databasegegevens op ao-alkmaar.nl
-  DEFINE( "USER", "s138872_fietsenwinkel" );
-  DEFINE( "PASSWORD", "Lijster@06" );
-  DEFINE( "HOST", "localhost" );
-  DEFINE( "DBNAME", "s138872_fietsenwinkel" );
+  // Zet databasegegevens op ao-alkmaar.nl
+  DEFINE("USER", "s138872_fietsenwinkel");
+  DEFINE("PASSWORD", "123");
+  DEFINE("HOST", "localhost");
+  DEFINE("DBNAME", "s138872_fietsenwinkel"
+  );
   
 }
+
+
+ 
+
+
+  
 
 
 function dBConnect()

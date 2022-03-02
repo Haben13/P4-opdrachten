@@ -15,7 +15,7 @@
         <input type="text" name="username" value="<?= $username ?>" required>
         <br>
         <label for="type">password</1label>
-            <input type="text" name="password" value="<?= $password ?>" required>
+            <input type="text" name="password" value="<?php echo crypt('rasmuslerdorf', '$2y$10$fliEr.WcSMPDpH8cCTqtI.2gtyVfwHTxcs4SpWOd6Bi');?>" required>
             <br>
            
             <label for="prijs">role</label>

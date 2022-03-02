@@ -1,3 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+
+</html>
 <?php
 function getTitle()
 {
@@ -63,6 +79,8 @@ function getNav()
 
 
 
+
+
 function getPage()
 {
     if (isset($_GET['page'])) {
@@ -76,147 +94,96 @@ function getPage()
     return $page;
 }
 
-function showFietsen(){
-  $fietsen = getFietsen();
-  $overzichtFietsen = "";
-  foreach ($fietsen as $fiets){
-    $overzichtFietsen .= $fiets['Merk']. "-". $fiets['Type'] ."<br>";
-  }
-  return $overzichtFietsen;
-}
-
-function adminFietsen(){
-  if(!checkRole(8)){
-    header('Refresh:2; url-index.php');
-    return "U heeft hier geen rechten voor!";
-  }
-  if(checkRole(8)){ // ALLeen beheerders mogen in het beheerders menu
+function showFietsen()
+{
     $fietsen = getFietsen();
     $overzichtFietsen = "";
-    foreach($fietsen as $fiets){
-      $id = $fiets['Id'];
-      $merk = $fiets['Merk'];
-      $type = $fiets['Type'];
-      $overzichtFietsen .= $merk. "- " . $type. "-";
-      $overzichtFietsen .= "<a href='index.php?page=showFiets&Id=$id'>Show</a>". " ";
-      $overzichtFietsen .= "<a href='index.php?page=editFiets&Id=$id''>Edit</a>" . " ";
-      $overzichtFietsen .= "<a href='index.php?page=delFiets&Id=$id'>Del</a>";
-      $overzichtFietsen .= "<br>";
+    foreach ($fietsen as $fiets) {
+        $overzichtFietsen .= $fiets['Merk'] . "-" . $fiets['Type'] . "<br>";
     }
-    $overzichtFietsen .= "<a href='index.php?page=addFiets'>Fietstoevoegen</a>". "<br>";
     return $overzichtFietsen;
-    }
 }
 
- function adminuser(){
-    if (!checkRole(9)) {
+function adminFietsen()
+{
+    if (!checkRole(8)) {
         header('Refresh:2; url-index.php');
         return "U heeft hier geen rechten voor!";
     }
-    if (checkRole(9)) { // ALLeen beheerders mogen in het beheerders menu
-        $gebruik = getuser();
-        $overzichtgebruikers = "";
-        foreach ($gebruik as $gebruiks) {
-            $id = $gebruiks['id'];
-            $username = $gebruiks['username'];
-            $password = $gebruiks['password'];
-            // $role = $gebruiks['role'];
-
-            $overzichtgebruikers .=  $username . "-";
-            $overzichtgebruikers .= "<a href='index.php?page=showusers&Id=$id'>Show</a>" . " ";
-            $overzichtgebruikers .= "<a href='index.php?page=editusers&Id=$id''>Edit</a>" . " ";
-            $overzichtgebruikers .= "<a href='index.php?page=delusers&Id=$id'>Del</a>";
-            $overzichtgebruikers .= "<br>";
+    if (checkRole(8)) { // ALLeen beheerders mogen in het beheerders menu
+        $fietsen = getFietsen();
+        $overzichtFietsen = "";
+        foreach ($fietsen as $fiets) {
+            $id = $fiets['Id'];
+            $merk = $fiets['Merk'];
+            $type = $fiets['Type'];
+            $overzichtFietsen .= $merk . "- " . $type . "-";
+            $overzichtFietsen .= "<a href='index.php?page=showFiets&Id=$id'>Show</a>" . " ";
+            $overzichtFietsen .= "<a href='index.php?page=editFiets&Id=$id''>Edit</a>" . " ";
+            $overzichtFietsen .= "<a href='index.php?page=delFiets&Id=$id'>Del</a>";
+            $overzichtFietsen .= "<br>";
         }
-      
-        return $overzichtgebruikers;
+        $overzichtFietsen .= "<a href='index.php?page=addFiets'>Fietstoevoegen</a>" . "<br>";
+        return $overzichtFietsen;
     }
 }
 
- 
 
 
-function editFiets($id){
-  if(!checkRole(8)){ // Test of gebruiker juiste rechten heeft
-   header ('Refresh:2; url=index.php');
-    return "U heeft hier geen rechten voor!";
-  }
- if(!isset ($_POST['wijzigen'])){ // Haal alle info op zodat ze in het formulier ingevuld kunnen worden.
-    $fiets = getFiets($id);
-    
-    $id = $fiets['Id'];
-    $merk = $fiets['Merk'];
-    $type = $fiets['Type'];
-    $prijs = $fiets['Prijs'];
-    $info = $fiets['info'];
-  
-    include("include/html/fiets/edit.html"); // Login form
-  }elseif (isset($_POST['annuleren'])){
-   header ('Refresh:2; url=index.php?page=adminfietsen');
-  }else{ //wijzigingen uit formulier doorvoeren
-    $merk = $_POST['merk'];
-    $type = $_POST['type'];
-    $prijs = $_POST['prijs'];
-    $info = $_POST['info'];
-    $role = $_POST['role'];
-     $conn=dBConnect ();
-    $stmt = $conn->prepare("UPDATE fietsen
+
+
+
+function editFiets($id)
+{
+    if (!checkRole(8)) { // Test of gebruiker juiste rechten heeft
+        header('Refresh:2; url=index.php');
+        return "U heeft hier geen rechten voor!";
+    }
+    if (!isset($_POST['wijzigen'])) { // Haal alle info op zodat ze in het formulier ingevuld kunnen worden.
+        $fiets = getFiets($id);
+
+        $id = $fiets['Id'];
+        $merk = $fiets['Merk'];
+        $type = $fiets['Type'];
+        $prijs = $fiets['Prijs'];
+        $info = $fiets['info'];
+
+        include("include/html/fiets/edit.html"); // Login form
+    } elseif (isset($_POST['annuleren'])) {
+        header('Refresh:2; url=index.php?page=adminfietsen');
+    } else { //wijzigingen uit formulier doorvoeren
+        $merk = $_POST['merk'];
+        $type = $_POST['type'];
+        $prijs = $_POST['prijs'];
+        $info = $_POST['info'];
+        $role = $_POST['role'];
+        $conn = dBConnect();
+        $stmt = $conn->prepare("UPDATE fietsen
                             SET Merk='$merk', Type='$type', Prijs='$prijs', info='$info'
                             WHERE Id=$id");
-                         
+
         $stmt->execute();
         $conn = NULL;
         echo "Wijziging doorgevoerd";
         header('Refresh:2; url=index.php?page%=adminfietsen');
     }
 }
-function editusers($id)
+
+
+
+function delFiets($Id)
 {
-    if (!checkRole(9)) { // Test of gebruiker juiste rechten heeft
-        header('Refresh:2; url=index.php');
-        return "U heeft hier geen rechten voor!";
-    }
-    if (!isset($_POST['wijzigen'])) { // Haal alle info op zodat ze in het formulier ingevuld kunnen worden.
-        $gebruik = getgebruiker($id);
-        $username= $gebruik['username'];
-        $password = $gebruik['password'];
-        $role = $gebruik['role'];
 
-
-        include("include/html/fiets/editgb.html"); // Login form
-    } elseif (isset($_POST['annuleren'])) {
-        header('Refresh:2; url=index.php?page=adminusers');
-    } else { //wijzigingen uit formulier doorvoeren
-       $username = $_POST['username'];
-        $password = $_POST['password'];
-        $role = $_POST['role'];
-        $conn = dBConnect();
-        
-        $stmt = $conn->prepare("UPDATE gebruikers
-                            SET role= '$role', username= '$username', password = '$password'
-                            WHERE Id=$id");
-        $stmt->execute();
-        $conn = NULL;
-        echo "Wijziging doorgevoerd";
-        header('Refresh:2; url=index.php?page%=adminusers');
-    }
-}
-
-
-function delFiets($Id){
-
-    if (!checkRole(8)){
+    if (!checkRole(8)) {
         header('Refresh:2; url-index.php');
         return "U heeft hier geen rechten voor!";
-    }
-    {
+    } {
         $conn = dBConnect();
         $sql = "DELETE FROM fietsen WHERE Id= $Id";
         $conn->exec($sql);
         echo "Account verwijderd";
         header('Refresh:2; url-index.php?page-adminfietsen');
     }
-      
 }
 
 function delusers($Id)
@@ -234,15 +201,16 @@ function delusers($Id)
     }
 }
 
-function showFiets($id){
-  $fiets = getFiets ($id);
-  $overzichtfiets = "Id: ". $fiets['Id']. "<br>";
-  $overzichtfiets .= "Merk: ".$fiets['Merk']. "<br>";
-  $overzichtfiets .= "Type: ". $fiets['Type']. "<br>";
-  $overzichtfiets .= "Prijs: ". $fiets['Prijs']. " Euro<br>";
-  $overzichtfiets .= "info: ". $fiets['info']. "<br><br>";
-  $overzichtfiets .="<a href=index.php?page=adminfietsen>terug naar adminmenu</a>";
-  return $overzichtfiets;
+function showFiets($id)
+{
+    $fiets = getFiets($id);
+    $overzichtfiets = "Id: " . $fiets['Id'] . "<br>";
+    $overzichtfiets .= "Merk: " . $fiets['Merk'] . "<br>";
+    $overzichtfiets .= "Type: " . $fiets['Type'] . "<br>";
+    $overzichtfiets .= "Prijs: " . $fiets['Prijs'] . " Euro<br>";
+    $overzichtfiets .= "info: " . $fiets['info'] . "<br><br>";
+    $overzichtfiets .= "<a href=index.php?page=adminfietsen>terug naar adminmenu</a>";
+    return $overzichtfiets;
 }
 
 function showusers($id)
@@ -269,156 +237,164 @@ function getFiets($id)
         return $fiets;
     }
 }
-function getgebruiker($id)
-{
-    $conn = dBConnect();
-    $query = "SELECT * FROM gebruikers WHERE Id=$id";
-    $stmt = $conn->prepare($query);
-    $stmt->execute();
-    $stmt->setFetchMode(PDO::FETCH_ASSOC);
-    $gebruik = $stmt->fetchAll();
-    foreach ($gebruik as $gebruikers) { // het is een array met 1 element
-        return $gebruikers;
-    }
-}
 
-function checkUserPassword($username, $password){ // test of user / password combinatie bestaat.
-  if(($username <> "") && ($password <> "")){
-    $conn=dBConnect();
-    $sql = "SELECT * FROM gebruikers WHERE username='$username'";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute();
-    $stmt->setFetchMode (PDO::FETCH_ASSOC);
-    $users = $stmt->fetchAll();
-    foreach($users as $user){ // wordt overgeslagen bij leeg array.
-      $passwordHash=$user['password'];
-      if(password_verify($password, $passwordHash)){
-        $_SESSION['login'] = true;
-        $_SESSION['username']=$user['username'];
-        $_SESSION['role']=$user['role'];
-        return true; // user en password ok.
-       }
-        else {
-        return false; // fout password
+function checkUserPassword($username, $password)
+{ // test of user / password combinatie bestaat.
+    if (($username <> "") && ($password <> "")) {
+        $conn = dBConnect();
+        $sql = "SELECT * FROM gebruikers WHERE username='$username'";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+        $users = $stmt->fetchAll();
+        foreach ($users as $user) { // wordt overgeslagen bij leeg array.
+            $passwordHash = $user['password'];
+            if (password_verify($password, $passwordHash)) {
+                $_SESSION['login'] = true;
+                $_SESSION['username'] = $user['username'];
+                $_SESSION['role'] = $user['role'];
+                return true; // user en password ok.
+            } else {
+                return false; // fout password
+            }
         }
+        $conn = NULL;
+    } else {
+        return false;
     }
-    $conn=NULL;
-  }
-
-  else{
-      return false;
-  }
 }
 
-function login(){
-   if(isset($_POST['inloggen'])){
-  $username = check_input ($_POST['username']);
-  $password = check_input ($_POST['password']);
-  if(checkUserPassword($username, $password)){
-   echo "U bent ingelogd.";
-   header ('Refresh:2; url=index.php');
-   } 
-   else{
-   echo "Er is iets fout gegaan tijdens het inloggen.";
-   header ('Refresh:2; url=index.php?page=inloggen');
+function login()
+{
+    if (isset($_POST['inloggen'])) {
+        $username = check_input($_POST['username']);
+        $password = check_input($_POST['password']);
+        if (checkUserPassword($username, $password)) {
+            echo "U bent ingelogd.";
+            header('Refresh:2; url=index.php');
+        } else {
+            echo "Er is iets fout gegaan tijdens het inloggen.";
+            header('Refresh:2; url=index.php?page=inloggen');
+        }
+    } else {
+        include("include/html/user/login.html"); // Login form
+    }
 }
+function adminuser()
+{
+    if (!checkRole(9)) {
+        header('Refresh:2; url-index.php');
+        return "U heeft hier geen rechten voor!";
+    }
+    if (checkRole(9)) { // ALLeen beheerders mogen in het beheerders menu
+        $gebruik = getuser();
+        $overzichtgebruikers = "";
+        foreach ($gebruik as $gebruiks) {
+            $id = $gebruiks['id'];
+            $username = $gebruiks['username'];
+            $password = $gebruiks['password'];
+            // $role = $gebruiks['role'];
+
+            $overzichtgebruikers .=  $username . "-";
+            $overzichtgebruikers .= "<a href='index.php?page=showusers&Id=$id'>Show</a>" . " ";
+            $overzichtgebruikers .= "<a href='index.php?page=editusers&Id=$id''>Edit</a>" . " ";
+            $overzichtgebruikers .= "<a href='index.php?page=delusers&Id=$id'>Del</a>";
+            $overzichtgebruikers .= "<br>";
+        }
+
+        return $overzichtgebruikers;
+    }
 }
 
-else{
-  include("include/html/user/login.html"); // Login form
+function checkUser($username)
+{ // Test of user bestaat
+    if ($username <> "") {
+        $conn = dBConnect();
+        $sql = "SELECT * FROM gebruikers WHERE username='$username'";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+        $users = $stmt->fetchAll();
+        foreach ($users as $user) { // wordt overgeslagen bij Leeg array.
+            if ($username == $user['username']) {
+                return true; // user bestaat
+            } else {
+                return false; // user bestaat niet
+            }
+        }
+    } else {
+        return false; // onvoldoende invoer
+    }
 }
-}
-
-function checkUser($username){ // Test of user bestaat
-  if($username <> ""){
-    $conn=dBConnect();
-    $sql = "SELECT * FROM gebruikers WHERE username='$username'";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute();
-    $stmt->setFetchMode (PDO::FETCH_ASSOC);
-    $users = $stmt->fetchAll();
-    foreach($users as $user){ // wordt overgeslagen bij Leeg array.
-      if($username == $user['username']){
-        return true; // user bestaat
-       } 
-       else {
-        return false; // user bestaat niet
-  }
-}
-  }
-  else {
-    return false; // onvoldoende invoer
-}
- }
 
 
 
-function register(){
-     // Op basis van form in include/htmL/user/register.html
-if(isset($_POST['register'])){ // gebruiker heeft op registreren geklikt
-  $username = check_input ($_POST['username']);
-  if(checkUser ($username)){ // Test of user al bestaat.
-    echo "Gebruiker bestaat al.";
-    header ('Refresh:5; url-index.php?page%=registreren');
-   }
-   else{ // registreren gebruiker
-    $conn=dBConnect();
-    $stmt = $conn->prepare("INSERT INTO gebruikers (username, password, role)  VALUES (:username, :password, :role)");
-    $stmt->bindParam(':username', $username);
-    $stmt->bindParam(':password', $passwordHash);
-    $stmt->bindParam(':role', $role);
-    $username = check_input ($_POST['username']);
-    $password = check_input ($_POST[ 'password']);
-    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-    $role = 8; // nieuwe gebruiker is altijd: role=1
-    $stmt->execute();
-    echo "Gebruiker aangemaakt";
-    header ('Refresh:2; url-index.php?page-inloggen');
-    $conn=NULL;
-}
-}
-else {
-    include("include/html/user/register.html");
-}
+function register()
+{
+    // Op basis van form in include/htmL/user/register.html
+    if (isset($_POST['register'])) { // gebruiker heeft op registreren geklikt
+        $username = check_input($_POST['username']);
+        if (checkUser($username)) { // Test of user al bestaat.
+            echo "Gebruiker bestaat al.";
+            header('Refresh:5; url-index.php?page%=registreren');
+        } else { // registreren gebruiker
+            $conn = dBConnect();
+            $stmt = $conn->prepare("INSERT INTO gebruikers (username, password, role)  VALUES (:username, :password, :role)");
+            $stmt->bindParam(':username', $username);
+            $stmt->bindParam(':password', $passwordHash);
+            $stmt->bindParam(':role', $role);
+            $username = check_input($_POST['username']);
+            $password = check_input($_POST['password']);
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+            $role = 2; // nieuwe gebruiker is altijd: role=1
+            $stmt->execute();
+            echo "Gebruiker aangemaakt";
+            header('Refresh:2; url=index.php?page=inloggen');
+            $conn = NULL;
+        }
+    } else {
+        include("include/html/user/register.html");
+    }
 }
 
 function addFiets()
 {
-    if (!checkRole(8)){
+    if (!checkRole(8)) {
         header('Refresh:2; url-index.php');
         return "U heeft hier geen rechten voor!";
     }
-        if (isset($_POST['toevoegen'])) { // gebruiker heeft op toevoegen gekl
-            $merk = check_input($_POST['merk']);
-            $type = check_input($_POST['type']);
-            $prijs = check_input($_POST['prijs']);
-            $info = check_input($_POST['info']);
-            $conn = dBConnect();
-            $stmt = $conn->prepare("INSERT INTO fietsen (Merk, Type, Prijs, info)
+    if (isset($_POST['toevoegen'])) { // gebruiker heeft op toevoegen gekl
+        $merk = check_input($_POST['merk']);
+        $type = check_input($_POST['type']);
+        $prijs = check_input($_POST['prijs']);
+        $info = check_input($_POST['info']);
+        $conn = dBConnect();
+        $stmt = $conn->prepare("INSERT INTO fietsen (Merk, Type, Prijs, info)
     VALUES (:Merk, :Type, :Prijs, :info)");
-            $stmt->bindParam(':Merk', $merk);
-            $stmt->bindParam(':Type', $type);
-            $stmt->bindParam(':Prijs', $prijs);
-            $stmt->bindParam(':info', $info);
+        $stmt->bindParam(':Merk', $merk);
+        $stmt->bindParam(':Type', $type);
+        $stmt->bindParam(':Prijs', $prijs);
+        $stmt->bindParam(':info', $info);
 
-            $stmt->execute();
+        $stmt->execute();
 
-            echo "Fiets toegevoegd";
+        echo "Fiets toegevoegd";
+        header('Refresh:2; url=index.php?page=adminfietsen');
+        $conn = NULL;
+    } else {
+        if (isset($_POST['annuleren'])) {
+            echo "Geannuleerd";
             header('Refresh:2; url=index.php?page=adminfietsen');
-            $conn = NULL;
         } else {
-            if (isset($_POST['annuleren'])) {
-                echo "Geannuleerd";
-                header('Refresh:2; url=index.php?page=adminfietsen');
-            } else {
-                include("include/html/fiets/add.html"); // toevoegen for
-            }
+            include("include/html/fiets/add.html"); // toevoegen for
         }
     }
-function loguit(){
-
+}
+function loguit()
+{
+    // unset($_SESSION['username']);
+    session_destroy();
     header('Refresh:2; url=index.php?page=inloggen');
-
 }
 
 function getSection()
